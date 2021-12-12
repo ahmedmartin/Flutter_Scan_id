@@ -23,6 +23,8 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 30
@@ -53,5 +55,19 @@ android {
 flutter {
     source '../..'
 }
+
+dependencies {
+
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:17.0.0'
+
+    implementation platform('com.google.firebase:firebase-bom:28.1.0')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation "androidx.browser:browser:1.2.0"
+    implementation 'com.android.support:multidex:1.0.3'
+
+    implementation 'com.google.android.gms:play-services-vision:20.1.2'
+    implementation 'com.google.android.gms:play-services-vision-common:19.1.2'
+    implementation 'com.google.android.gms:play-services-vision-image-label:18.1.0'
+ }
 
 

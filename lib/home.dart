@@ -65,8 +65,9 @@ class _Home extends State<Home>{
       // if we need get data from our phone photo
       //temp = (await testCompressAndGetFile(temp, temp.absolute.path+'.jpg'))!;
       print(await getFileSize(temp.path, 1));
-      scantext(temp.path);
-   //--------------------
+
+      api_scantext(temp.path);
+   //--------detect arabic but not power------------
    //  setState(() {
    //    text = '';
    //    wait=true;
@@ -85,90 +86,115 @@ class _Home extends State<Home>{
       print(e.toString());
     }
 
-   //scanText();
+   //plugin_scanText();
   }
+   //------------detect english only---------------------------------
+  // Future plugin_scanText() async {
+  //
+  //   setState(() {
+  //     wait=true;
+  //   });
+  //
+  //   final inputImage = InputImage.fromFile(image!);
+  //   final textDetector = GoogleMlKit.vision.textDetector();
+  //   final RecognisedText recognisedText = await textDetector.processImage(inputImage);
+  //   String temp_text = '';//recognisedText.text;
+  //
+  //   for (TextBlock block in recognisedText.blocks) {
+  //     for (TextLine line in block.lines) {
+  //       for (TextElement element in line.elements) {
+  //         temp_text+=' '+element.text;
+  //       }
+  //       temp_text+='\n';
+  //     }
+  //   }
+  //   setState(() {
+  //     text = temp_text;
+  //     wait = false;
+  //   });
 
-//   Future scanText() async {
-//
-//     setState(() {
-//       wait=true;
-//     });
-//
-//     final inputImage = InputImage.fromFile(image!);
-//     final textDetector = GoogleMlKit.vision.textDetector();
-//     final RecognisedText recognisedText = await textDetector.processImage(inputImage);
-//     String temp_text = '';//recognisedText.text;
-//
-//     for (TextBlock block in recognisedText.blocks) {
-//       for (TextLine line in block.lines) {
-//         for (TextElement element in line.elements) {
-//           temp_text+=' '+element.text;
-//         }
-//         temp_text+='\n';
-//       }
-//     }
-//     setState(() {
-//       text = temp_text;
-//       wait = false;
-//     });
-//
 // //---------------------------------------------------
-//
-//     // final GoogleVisionImage visionImage = GoogleVisionImage.fromFile(image!);
-//     // final TextRecognizer textRecognizer = GoogleVision.instance.textRecognizer();
-//     // final VisionText visionText = await textRecognizer.processImage(visionImage);
-//     // String temp_text =visionText.text!;
-//     // for (TextBlock block in visionText.blocks) {
-//     //
-//     //   final List<RecognizedLanguage> languages = block.recognizedLanguages;
-//     //   print(languages);
-//     //   for (TextLine line in block.lines) {
-//     //     // Same getters as TextBlock
-//     //     for (TextElement element in line.elements) {
-//     //       temp_text+=' '+temp_text;
-//     //     }
-//     //     temp_text+='\n';
-//     //   }
-//     // }
-//     setState(() {
-//       text = temp_text;
-//       wait = false;
-//     });
-//   }
 
-  scantext(String path)async{
+    // final GoogleVisionImage visionImage = GoogleVisionImage.fromFile(image!);
+    // final TextRecognizer textRecognizer = GoogleVision.instance.textRecognizer();
+    // try {
+    //   if(textRecognizer != null)
+    //   final VisionText visionText = await textRecognizer.processImage(visionImage);
+    // }catch(e){
+    //   print(e.toString());
+    // }
+    // String temp_text ='';//=visionText.text!;
+    // for (TextBlock block in visionText.blocks) {
+    //   //final List<RecognizedLanguage> languages = block.recognizedLanguages;
+    //   //print(languages);
+    //   for (TextLine line in block.lines) {
+    //     // Same getters as TextBlock
+    //     for (TextElement element in line.elements) {
+    //       temp_text+=' '+temp_text;
+    //     }
+    //     temp_text+='\n';
+    //   }
+    // }
+  //   setState(() {
+  //     text = temp_text;
+  //     wait = false;
+  //   });
+  // }
+
+
+  api_scantext(String path)async{
 
     setState(() {
       wait=true;
       text='';
     });
+
+    //------------10 requests every 10 minutes------------------
+    // String temp_text = '';
+    // text_model ?model ;
+    // var formData = FormData.fromMap({
+    //   'language': 'ara',
+    //   'file': await MultipartFile.fromFile(path)
+    // });
+    //  final response = await Dio().post('https://api.ocr.space/parse/image',data: formData,
+    //      options: Options(headers: {'apikey':'440cfcd6a188957'})); //helloworld
+    //
+    //  if(response.statusCode==200)
+    //   model =  text_model.fromJson(response.data);
+    //  else
+    //    temp_text = response.statusMessage.toString();
+    //
+    //  if(model!.parsedResults != null) {
+    //   // print(model!.parsedResults![0].parsedText);
+    //    //model.parsedResults!.forEach((element) {temp_text+=element.parsedText!+'\n';});
+    //    temp_text = model.parsedResults![0].parsedText!;
+    //  }else{
+    //    temp_text = response.data;
+    //  }
+
+    //-------------3 times ber day -----------------------------------------------------------
+
     String temp_text = '';
-    text_model ?model ;
     var formData = FormData.fromMap({
-      'language': 'ara',
-      'file': await MultipartFile.fromFile(path)
+      'file': await MultipartFile.fromFile(path),
+      //'apiKey':'5HYvuEDrQW3ACN5b1jz1zNLYd4tMCbfdDEdxBiFkyKfN'
+           //   GX4Ljip12Xd6JQyZrDBbxtMjyaQR91qX8eZoTzijFQ1y
     });
-     final response = await Dio().post('https://api.ocr.space/parse/image',data: formData,
-         options: Options(headers: {'apikey':'helloworld'}));
+    final response = await Dio().post('https://api.optiic.dev/process',data: formData);
 
-     if(response.statusCode==200)
-      model =  text_model.fromJson(response.data);
-     else
-       temp_text = response.statusMessage.toString();
+    if(response.statusCode==200)
+      temp_text = response.data['text'];
+    else
+      print(response.statusMessage.toString());
 
-     if(model!.parsedResults != null) {
-      // print(model!.parsedResults![0].parsedText);
-       //model.parsedResults!.forEach((element) {temp_text+=element.parsedText!+'\n';});
-       temp_text = model.parsedResults![0].parsedText!;
-     }else{
-       temp_text = response.data;
-     }
+
     setState(() {
       text = temp_text;
       wait = false;
     });
   }
 
+  // get file size
   getFileSize(String filepath, int decimals) async {
     var file = File(filepath);
     int bytes = await file.length();
@@ -178,6 +204,7 @@ class _Home extends State<Home>{
     return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + ' ' + suffixes[i];
   }
 
+  // decries file size
   Future<File?> testCompressAndGetFile(File file, String targetPath) async {
     var result = await FlutterImageCompress.compressAndGetFile(
       file.absolute.path, targetPath,
